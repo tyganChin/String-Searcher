@@ -1,6 +1,6 @@
 #########################################################
 #                PROJECT 4: gerp Makefile     	     	#
-#   Authors: Tygan Chin (tchin02) and Emily Ye (ye02)	#
+#              Author: Tygan Chin (tchin02)	        #
 #########################################################
 
 MAKEFLAGS += -L
