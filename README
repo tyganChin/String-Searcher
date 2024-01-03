@@ -1,0 +1,728 @@
+/*******************************************************************************
+* Project 4
+* Comp 15 Spring 2023
+* README
+* Author: Tygan Chin tchin02 & Emily Ye eye03
+*******************************************************************************/
+
+Program Purpose: 
+---------------
+
+    Indexes the words in all of the files of a given directory and provides all
+    of the instances of user provided words in the index. Takes in user queries
+    to search for words in a certain directory in both case sensitive and 
+    insensitive cases and stores the output in a user provided output file. 
+
+Acknowledgments: 
+---------------
+
+    - Piazza
+    - TA for design checkoff
+    - Hash lecture
+    - lab10 (FunkeyTable.cpp)
+
+Files:
+-----
+
+    main.cpp
+        - Runs the gerp program. Prompts and executes user commands regarding 
+        the location of words in a given file directory.
+
+    Gerp.h
+        - Interface for Gerp class. Declares functions that prompt and 
+        execute user for commands regarding a word and file index it creates. 
+        Commands include, finding any string case sensitivly, case insensitvly 
+        and printing the output to a given output file. 
+
+    Gerp.cpp
+        - Implementation for Gerp class. Implements functions that prompt  
+        and execute user for commands regarding a word and file index it 
+        creates. Commands include, finding any string case 
+        sensitivly, case insensitvly and printing the output to a given output 
+        file. 
+    
+    fileHash.h
+        - Interface for fileHash class. Declares the funcitons that insert 
+        files and their paths into an index and  prints out the paths to each 
+        file, given the file name index.
+
+    fileHash.cpp
+        - Implementation for fileHash class. Declares the funcitons that 
+        insert files and their paths into an index and prints out the paths to 
+        each file, given the file name.  
+
+    WordHash.h
+        - Interface for WordHash class. Declares the funcitons that insert 
+        words and their instances into the index and  prints out a word in the 
+        index.
+
+    WordHash.cpp
+        - Implementation for WordHash class. Implements the funcitons that
+            insert words and their instances into the index and  prints out a 
+            word in the index.
+
+    Word.h
+        - Interface for Word class. Declares the funcitons that insert 
+        instances of words into the object, prints the word, etc. 
+
+    Word.cpp
+        - Implementation for Word class. Implements the funcitons that 
+        insert instances of words into the object, prints the word, etc. 
+
+    Makefile
+        - Compiles the gerp program using the word "make" and compiles other 
+        testing files. 
+
+    unit_tests.h
+        - Testing framework for the Word, WordHash, fileHash, and Gerp classes. 
+        Tests a majority of the functionalites of the 
+         functions in those classes.
+
+    testWordMain.cpp
+        - Testing main for the Word class. Tests the functionalities of the 
+        class along with providing a visualization.
+
+    testWordHashMain.cpp
+        - Testing main for the WordHash class. Tests the functionalities of the 
+        class along with providing a visualization.
+
+    testFileHashMain.cpp
+        - Testing main for the FileHash class. Tests some of the class' 
+        functionalities including it's print function
+    
+    testGerpMain.cpp
+        - Testing main for Gerp class. Prints out the file and word indexes for 
+        3 given test files.
+
+    stringProcessing.h
+        - Declares the stripNonAlphaNum function that strips the nonalphanuric 
+        characters from the front and back of string. 
+
+    stringProcessing.cpp
+        - Implements the stripNonAlphaNum function that strips the 
+        nonalphanuric characters from the front and back of 
+         string.  
+
+    parseMain.cpp
+        - Tests the stripNonAlphaNum function in stringProcessing.h and 
+        stringProcessing.cpp.
+    
+    FSTreeTraversal.cpp
+        - Declares, implements and tests the traverse function found in Gerp.h.
+    
+    Testing Files
+        - TestTrav, Tcasestrings.txt, Tdoubleswitch.txt, Tempty.txt, Temptyquit.
+        txt, Tendswitch.txt, Thalfwayswitch.txt, x.txt, y.txt, z.txt, a.txt
+        Tinstantswitch.txt, Tquit.txt, Tstrings.txt, b.txt, c.txt
+
+Compile/run: 
+-----------
+    
+    Main Gerp Program
+        - enter "make" and then "./Gerp [directory] [outFile]"
+    Unit Tests
+        - enter "unit_tests"
+    Word Class Test
+        - enter "make testWordMain" and then "./testWord"
+    WordHash Class Test
+        - enter "make testWordHashMain" and then "./testWordHash"
+    FileHash Class Test
+        - enter "make testFileHashMain" and then "./testFileHash [outfile]"
+    Gerp Class Test
+        - enter "make testGerpMain" and then "./testGerpMain [outfile]"
+    stripNonAlphaNum Test
+        - compile with: g++ -o [executable] -Wall -Wextra parseMain.cpp 
+        stringProcessing.h stringProcessing.cpp
+        - run with ./[executlable]
+    traverseTree test
+        - compile with: g++ -o [executable] -Wall -Wextra FSTreeTraversal.cpp 
+        FSTree.o DirNode.o
+        - run with ./[executable] testTrav
+
+
+Architectural Overview: 
+----------------------
+
+    - Each Word object represents the instances of 1 word in the files (case 
+    insensitive). It is comprised of a list of exactWords which are the 
+    different versions of the word (ex: The, the, tHe), and each exactWord 
+    contains a list of instances of that word (fileName and lineNum). There 
+    also exists a list of totalInstances in the Word object to both make 
+    printing out the instnaces simpler and to deal with 2 different exact words 
+    existing on the same line (The dog is the best.)
+
+    - The bucket's of the WordHash class are comprised of pointers to Word 
+    objects.
+
+    - The FileHash class exists separetly from both, although it is passed in 
+    as an argument to their print functions. It is a hash that takes in the 
+    filenames as keys, and contain the paths to the given file as the value. 
+
+    - The Gerp class utilizes both the WordHash and the fileHash to index the 
+    words in the given files of the directory and to index the files and their 
+    paths respectively. 
+    
+    - When a user enters a word, the program hashes the word to find the word 
+    object of that word in the WordHash. It the passes the file and line 
+    numbers of each instance (case or noncase sensitive) to the fileHash 
+    object, which will print out the path to the line, and then pass the line 
+    and file the Word object which go to that line in the file and print the 
+    line. 
+
+
+Data Structures: 
+-----------
+
+    DS: hash
+        - A hash is comprised of two main elements, 1 is a dynamically sized 
+        array and the other is hash function, which takes in a "key" (integer, 
+        string etc.) and outputs a number that corresponds to one of the slots 
+        in the array. This provides the user with average retrieval time of O
+        (1) as accessing any element of an array is O(1). To deal with 
+        collisions, you can either "chain" which involves each slot in the 
+        array to hold a list of elements, or you can linearly probe, which 
+        involes inserting the element into the next open "bucket" if the one it 
+        hashes to is full. When the hash reaches a load factor (numElements/
+        sizeOfTable) of .7, you expand the array and rehash of the elements in 
+        said array.
+            - Gerp.cpp: In order to provide a fast retrieval time for the word 
+            instances in the given files, we implemented a hash that takes in a 
+            word, and outputs all of the instances of the given string. To 
+            implement, when reading in the words from the given files we
+            inserted each word into the hash function and then used the number 
+            it outputted to insert that word instance into the array. we chose 
+            to chain with this hash becuase of the hundreds of thousands of 
+            words that are present in the large gutenberg file. For larger 
+            inputs, chaining helps deal with the collisons in an efficient way.
+            - Gerp.cpp: Because the complexity of finding the path to any given 
+            file was O(numFiles) (worst case, the whole tree would ahve to be 
+            traversed because there is no comparison that can be made between 
+            the given file and the ndoes of the tree) for the FSTree given to 
+            us, we implemented a second hash called fileHash. This hash behaved 
+            similariy to the wordHash as it provides an average retreival speed 
+            of O(1). It takes in a file name and prints out the path to that 
+            file. We used linear probing for this one becuase the most of files 
+            it will deal with is thousands which linear probing lends itself 
+            well to. 
+        
+    DS: list
+        - A list is a way of storing data in memory in a non-contiguous manner. 
+        Each elemetn in the list points to the next element in the list. 
+        Insertion time for this DS is O(1) and lookup is O(n).
+            - Word.cpp: We used 3 separate instances of the list DS in the word 
+            class in order to implement it. One list for the exactWords struct 
+            which stored a specific case of the word, another for the total 
+            instances of the word, and the last which stored the instances of 
+            an exact word (stored in the exact word struct). The reason we
+            chose to use a list as opposed to a vector or hash is because every 
+            element of all of these lists must be iterated over when they are 
+            used which negatest the benefits of those two (hash could be useful 
+            for exactWord lookup but because those are rare, iterating through 
+            that list is on average very quick). To find an exactWord, you must 
+            iterate over the whole list to find it, and for the instances you 
+            must print out every instance. The constant time to access the last 
+            element in the list made checking for duplicates fast as well. 
+        
+    Algorithm #1: Duplicates
+        - For the lists of instances, we did not use a set depsite it's 
+        usefullness at not storing duplicates. This was because the average 
+        insertion of the std::set is O(logn) (because the set must be sure of 
+        no duplicates and to order the data) and we could achieve insertion 
+        with the list without duplicates in O(1). This is becuase for this 
+        specific use case, the only time duplicates ever occur is right next to 
+        each other as the words and their locations are sequentially read in 
+        from the files. This means that in order to insert into the list of 
+        instances and be sure of no duplicates, all that needs to be checked is 
+        that the most recently added is not equal to the one being added. We
+        used two functions to implement this algorithm, addInstanceAll which 
+        added isntances to the total word instances and addInstanceExact which 
+        added instances to exactWord structs. Both were generally the same, 
+        they checked whether the list was empty, if not they compared the back 
+        (most recent) instance in the list's lineNumber and fileName. If they 
+        were the same, the instance would not be added and if one of them 
+        differed it woudld be. 
+
+    Algorithm #2: Case-Sensitivity
+        - To deal with word prompts that were case-sensitive or insensitive, 
+        each Word object contained the word itself, and list of exactWords that 
+        each had a list of instances of that specific word. However, to enure 
+        that all of the same Words, regardless of case, mapped to the same hash 
+        bucket and we were able to tell whether a given word was in instance in 
+        Word object, we needed two functions. The first was makeLower() in teh 
+        WordHash class. This function took in a userWord and returned the 
+        lowercase version of that word. This made it so the hash function 
+        mapped the word to the same bucket as the other word intances of 
+        different case. However, because of collisions, the word needed to be 
+        compared to the word stored in the Word object. This was done with the 
+        isWord() function in the Word class. This function took in a userWord, 
+        and compared each letter of the words case-insensitively and returns 
+        true if they are the same word and false otherwise. 
+
+
+Testing: 
+-------
+
+/********************************************************************\
+*                            Word.h                                   *
+\********************************************************************/
+
+*PRIVATE MUST BE COMMENTED OUT IN ORDER TO WORK
+
+*
+* unit_test.h
+*
+
+Constructor + setExactWord + setInstance
+
+    Tests:
+    - Declared a Word object using the constructor and then checked each member 
+    variable of the word, along with the exact words and instances to make sure 
+     they were correct. This tested the setExactWord and setInstance functions 
+     too as those are necesary to create the word instance.
+
+    Bug(s): 
+    - Never initialized the next pointer.
+
+setNext
+
+    Tests:
+    - Declared 2 Word objects, called func to set the next of Word 1 to Word 2 
+    and vice versa, and then made sure that Word 1's next pointer pointed to 
+    word 2 and vice versa.
+
+    Bug(s): 
+    - n/a
+
+insert + addInstanceAll + addInstanceExact (x2)
+
+    Tests:
+    - Inserted the same word, but a different case and line number into a Word 
+    object using func, and then made sure the that a new exact Word was created 
+    and added to the back of the list of them and that a new instance was added 
+    to the total instances of that word.
+    - Inserted the same word with the same case into a Word object using func 
+    and then made sure no exactWords were added, nor instances becuase the line 
+    and filename were the same
+    - Inserted the same word but in a different location in a Word object using 
+    func and then made sure that no exactWords were added, but an instance was 
+    added to both the exactWord and the totalInstaces list.
+    - Inserted a different word into a Word object using func and then made 
+    sure the function returned false and the size of the exactWords and total 
+    instances remained the same. 
+
+    Bug(s): 
+    - Wasn't accounting for duplicates so we created the addInstance functions 
+    which checks the most recent intstance to make sure the same line from the 
+    same file isn't inputted twice.
+    - Wasn't accounting for case-insensitive queries which could result in 
+    duplicates if you are printing out all of the individual instances of the 
+    exactWords becuae there could be duplicates between the two. To fix this we 
+    created another list of instances called TotalInstances that accounts for 
+    this.
+
+isWord
+
+    Tests:
+    - Called function with the same word as the Word object and make sure that 
+    it returns true.
+    - Called function with a different word as the Word object and make sure it 
+    returns false.
+
+    Bug(s): 
+    - n/a
+
+getNext
+
+    Tests:
+    - Declared two word objects, set the next pointer of one to the other, and 
+    then called the func to make sure one word returned the other word and the 
+    other returned the nullptr because we never set it.
+
+    Bug(s): 
+    - n/a
+
+
+getWord
+
+    Tests:
+    - Declared 3 word objects, 1 with an uppoercase word, 1 with a lowercase 
+    word, and the last with a single letter word. Then we made sure that the 
+    function returned that exact word. 
+
+    Bug(s): 
+    - n/a
+
+
+*
+* testWordMain
+*
+
+- Used a testing print function (must be commented in) to insert Words into a 
+word object and print out the word after each insertion. 
+- Stress tested the Word class by inserting 1000 instances of the word into the 
+Word object and printed out the Word after every iteration. 
+- This was mostly just 
+
+/********************************************************************\
+*                          WordHash.h                                *
+\********************************************************************/
+
+*PRIVATE MUST BE COMMENTED OUT IN ORDER TO WORK
+
+*
+* unit_test.h
+*
+
+Constructor
+
+    Tests:
+    - Initialized a WordHash object and then checked to make sure the size, 
+    number of words and the contents of each bucket were all set to the correct 
+    values;
+
+    Bug(s): 
+    - Forgot to initialize the table to all nullptrs.
+
+Destructor + deleteList
+
+    Tests:
+    - The unit test driver runs valgrind on all of the tests so these two 
+    functions were implicity tested for every other test of the wordHash class.
+
+    Bug(s): 
+    - n/a
+
+insert(string &word, string &ogWord, string &file, int &line)
+
+    Tests:
+    - Inserted a single word into the hash and checked to make sure the word 
+    was created wiht the correct information and placed in the hash.
+    - Inserted multiple of the same word (with differnt line numbers) and made 
+    sure that no new Words were created, only new instances in the pre-existing 
+    word.
+    - inserted 25 different words into the hash and then made sure that 25 
+    words were created and that they could be accessed using the word.
+
+    Bug(s): 
+    - We forgot to increment the number of words at the end of insertion
+
+listLength
+
+    Tests:
+    - Mkaes sure function returns the correct lenght of the list for a list of 
+    3, 2, 1, and 0 Words.
+
+    Bug(s): 
+    - n/a
+
+getlast
+
+    Tests:
+    - Created a list of 3 Words and then made sure the function returned the 
+    last Word in that list when given the first Word.
+    - Created a list of 1 word and then made sure the function returned that 
+    word when called.
+
+    Bug(s): 
+    - n/a
+
+exapnd + insert(Word *copyWord, Word *table[])
+
+    Tests:
+    - Inserted 2 words into the hash and make sure the size of the table is 
+    still 4. Then add a third word and then checked to see if the size doubled 
+    to 8. Then we checked whether the elements were still accessable after the 
+    rehash in the insert function. 
+
+    Bug(s): 
+    - We forgot to delete the old table. 
+    - Before 2nd insert function was made, we used the first one which rehashed 
+    the elements into the original hash table.
+    - When getting the number of items in the new hash table slot that we were 
+    inserting into, we were acutally getting the number of Words in the word 
+    that we were rehashing.
+    
+    Note:
+    - The intial table size in the WordHash contructor must be set to 4 in 
+    order for test to work.
+
+makeLower
+
+    Tests:
+    - Created 4 strings, one that was all lowercase, one all uppercase, one a 
+    mix, and the last a string of numbers and symbols with a few letters mixed 
+    and then made sure the function returned strings with any uppoercase 
+    letters switched to lowercasae.
+
+    Bug(s): 
+    - n/a
+
+
+*
+* testWordHashMain.cpp
+*
+
+- Created a wordHash instance and inserted multiple words into it, using a 
+print function (must be commented in) in order to help ensure that the hash was 
+behaving as intended. One thing we looked for was if the hash was spreading the 
+words to separate places in the hash and whether or not the chaining was working
+- One bug that was found was if the word was the second in the bucket, then any 
+future instnaceas that were inserted resulted in new words being created. This 
+led to multiple of the same words. The issue was that there was a mistake with 
+how we were checking if the word already existed, and once fixed, the program 
+behaved properly.
+
+/********************************************************************\
+*                          fileHash.h                                *
+\********************************************************************/
+
+*PRIVATE MUST BE COMMENTED OUT IN ORDER TO WORK
+
+Contructor
+
+    Tests:
+    - Initialized a filehash object and made sure the file count, hash size, 
+    and each bucket were all intialized to the correct values.
+
+    Bug(s): 
+    - n/a
+
+Destructor
+
+    Tests:
+    - Implicitly tested with the other unit tests.
+
+    Bug(s): 
+    - n/a
+
+insert + sertHelp
+
+    Tests:
+    - Insert 4 different files with unique filePaths into the file, then 
+    checked to make sure the numFiles varialbe was correct and that inserting 
+    the name of the file returned the pathway to said file using a test fuction 
+    called testReturn.
+
+    Bug(s): 
+    - n/a
+
+print
+
+    Tests:
+    - The output sent to the ostream was tested in testPrintMain.cpp but the 
+    return value of the function which is the path to the wordfile was tested 
+    by adding 2 files to the hash and then calling the func and making sure the 
+    correct path was returned. 
+
+    Bug(s): 
+    - n/a
+
+expand + sertHelp
+
+    * Initial table size must be set to 4
+
+    Tests:
+    - Add two files to the hash and make sure the table size remains the same 
+    (4). Then add another and then make sure the size doubles to 8. Also made 
+    sure the paths were still accessable with the file name. 
+
+    Bug(s): 
+    - Becuase we used the same function (sertHelp) to insert files for both the 
+    insertion function and the expand function, the program was entering the 
+    expand function everytime forever. To fix this we added a bool that 
+    signified whether or not the table was expanding, so that it would not 
+    continually check expansion if it was expanding.
+
+
+*
+* testFileHashMain.cpp
+*
+
+- Created a fileHash instance and after every insert of a new file and path, we 
+printed out the hash using the test function testPrint() to help visulaize how 
+the hash was hashing. Also helped visualize the expand function if the size is 
+set to less than 5. 
+- Also tested the print() function of the FileHash class by allowing us to view 
+what is added to the given output stream when the function is called using cat 
+and then the name of the output file given.
+
+
+
+/********************************************************************\
+*                             Gerp.h                                 *
+\********************************************************************/
+
+*PRIVATE MUST BE COMMENTED OUT IN ORDER TO WORK
+
+*
+* unit_test.h
+*
+
+contructor
+
+    Testing File:
+    - testTrav
+
+    Tests:
+    - Initialized a gerp object using a test directory and then made sure the 
+    word and file indexes in gerp contained the correct amount of words and 
+    files. 
+
+    Bug(s): 
+    - n/a
+
+
+*
+* gerp executable
+*
+
+- The printWord function in Gerp.h along with the print funcs in WordHash and 
+Word were tested by inputting files into the gerp executable and diffing the 
+output to cout and to the given output file agianst the reference ./the_gerp.
+
+query (quit)
+
+    Testing Files:
+    - Tquit.txt
+    - TEmptyquit.txt
+    - Tempty.txt
+    - TinyData and smallGutenberg
+
+    Tests:
+    - Inputted only the quit (@q) command into the program. (TEmptyquit.txt)
+    - Inputted other commands before and after the quit command (@quit).(Tquit.
+    txt)
+
+    Bug(s): 
+    - We returned the wrong boolean expression for the command which meant that 
+    for any other command that wastn't quit the program would terminate. 
+
+query (Anystring)
+
+    Testing Files:
+    - Tstrings.txt
+    - TinyData and smallGutenberg
+
+    Tests:
+    - Inputted a number of strings and made sure all of them were handeld 
+    properly (printed out or error message). The strings included all 
+    lowercase, all upper, a mix, a mix of alphanumeric and non-alphanumeric, 
+    and all alphanumeric. Making sure to include both strings that were present 
+    and strings that were not. 
+
+    Bug(s): 
+    - n/a
+
+query (@i Anystring)
+
+    Testing Files:
+    - Tcasestrings.txt
+    - TinyData and smallGutenberg
+
+    Tests:
+    - Inputted a number of strings with @i or @insensitve in front and made 
+    sure all of them were handled properly (printed out or error message). The 
+    strings included all lowercase, all upper, a mix, a mix of alphanumeric and 
+    non-alphanumeric, and all alphanumeric. Making sure to include both strings 
+    that were present and strings that were not. 
+
+    Bug(s): 
+    - We thought that this was the case sensitive one :(.
+
+query (switchOutput)
+
+    Testing Files:
+    - Tinstantswitch.txt
+    - Thalfwayswitch.txt
+    - Tendswitch.txt
+    - Tdoubleswitch.txt
+    - TinyData and smallGutenberg
+
+    Tests:
+    - Switch output file immedialtly, and read in data to switched output.
+    - Switch output file in the middle of inputting strings.
+    - Switch output file at the end of inputting strings.
+    - Double switch output file
+
+    Bug(s): 
+    - n/a
+
+main.cpp
+
+    Testing Files:
+    - TinyData and smallGutenberg
+
+    Tests:
+    - Inputted too few input files and too many to make sure error message was 
+    outputted to cerr.
+
+    Bug(s): 
+    - n/a
+
+
+*
+* testGerpMain.cpp
+*
+
+    Testing files: 
+    - testTrav
+    - TinyData
+    - smallGutenberg
+
+    - Tested the read in function for the gerp class by initializing a gerp 
+    object using 1 of the 3 files above and then using the test print functions 
+    for the wordHash and fileHash class to print out the entire tables to make 
+    sure all of the words were accounted for
+
+
+*
+* parseMain.cpp
+*
+
+stripNonAlphaNum()
+
+    Testing Files:
+    - stringProcessing.cpp
+    - stringProcessing.h
+
+    Tests:
+    - Passed in string with non-alpha characters in the front and back of word, 
+    in the middle of the word, none at all, only at the begining, only them and 
+    no letters or numbers, a single letter, and a single nonAlpha a single 
+    letter and printed each one out and made the non-alpha's were stripped from 
+    the front and back of the strings. 
+
+    Bug(s): 
+    - n/a
+
+    Note:
+    - This function in the gerp class was slightly changed from 
+
+
+*
+* FSTreeTraversal.cpp
+*
+
+FSTreeTraversal
+
+    Testing Files:
+    - testTrav (directory)
+
+    Tests:
+    - Passed in the direcotry testTrav into the function to make sure that it 
+    printed out each file and direcotry name along with it's path. 
+
+    Bug(s): 
+    - n/a
+
+    Note: 
+    - For the Gerp class, this funciton was slightly altered to read in the 
+    file names and words instead of print out the file paths but the 
+    functionality in both cases is the same. 
+
+
+
+Time Spent: 
+-------
+
+    ~30 hours
