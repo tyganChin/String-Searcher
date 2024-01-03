@@ -1,6 +1,6 @@
 /*
  *  Word.h
- *  Tygan Chin tchin02 Emily Ye eye02
+ *  Tygan Chin tchin02
  *  4/15/2023
  *
  *  gerp
