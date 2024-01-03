@@ -1,6 +1,6 @@
  /*
  *  stringProcessing.h
- *  Tygan Chin tchin02 Emily Ye eye02
+ *  Tygan Chin tchin02
  *  3/28/2023
  *
  *  gerp
