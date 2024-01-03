@@ -1,6 +1,6 @@
  /*
  *  FSTreeTraversal.cpp
- *  Tygan Chin tchin02 Emily Ye eye03
+ *  Author: Tygan Chin tchin02 
  *  3/28/2023
  *
  *  gerp
