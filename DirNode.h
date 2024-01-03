@@ -1,5 +1,6 @@
 /*
  * Filename: DirNode.h
+ * Author: CS15 Admin
  * Contains: Interface of the DirNode class
  *           Each DirNode will be a folder (and contain info of files
  *           inside that directory.
