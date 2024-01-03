@@ -1,5 +1,6 @@
 /*
  * Filename: DirNode.h
+ * Author: CS15 Admin
  * Contains: Interface of the FSTree class
  *           This class contains an n-ary tree to represent a file system
  * Part of: Project 2 assignment "Grep" for Comp 15 Fall 2018
