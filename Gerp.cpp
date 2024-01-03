@@ -1,6 +1,6 @@
  /*
  *  Gerp.cpp
- *  Tygan Chin tchin02 Emily Ye eye03
+ *  Tygan Chin tchin02
  *  4/15/2023
  *
  *  gerp
